@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in NetPeek / fsociety does not work as expected.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! Please **redact your own IP and MAC addresses**
+        before posting screenshots or logs.
+  - type: input
+    id: version
+    attributes:
+      label: NetPeek version
+      description: Output of `netpeek version`
+      placeholder: "netpeek 0.1.0  (python 3.12.1)"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 10/11
+        - Linux
+        - macOS
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command you ran
+      placeholder: "netpeek me --ports"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: Paste the output or the traceback.
+    validations:
+      required: true
+  - type: checkboxes
+    id: legal
+    attributes:
+      label: Confirmation
+      options:
+        - label: I ran this against my own machine or my own network.
+          required: true

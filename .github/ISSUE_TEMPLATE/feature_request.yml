@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest a new command or improvement.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        NetPeek is read-only and only ever touches **your own** machine and
+        network. Please keep proposals inside that boundary.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed command / behaviour
+      placeholder: |
+        netpeek <command> [options]
+        What should it print?
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Design rules
+      options:
+        - label: The proposal is read-only (changes nothing on the system).
+          required: true
+        - label: It only inspects my own machine or my own local network.
+          required: true
+        - label: It needs no offensive tooling (no exploits, no brute force).
+          required: true
