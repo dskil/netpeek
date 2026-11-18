@@ -33,9 +33,9 @@ netpeek = "netpeek.main:run"
 fsociety = "netpeek.main:run"
 
 [project.urls]
-Homepage = "https://github.com/REPLACE_ME/netpeek"
-Repository = "https://github.com/REPLACE_ME/netpeek"
-Issues = "https://github.com/REPLACE_ME/netpeek/issues"
+Homepage = "https://github.com/dskil/netpeek"
+Repository = "https://github.com/dskil/netpeek"
+Issues = "https://github.com/dskil/netpeek/issues"
 
 [tool.setuptools.packages.find]
 include = ["netpeek*"]

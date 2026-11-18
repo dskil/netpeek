@@ -45,7 +45,7 @@ illegal.
 ## Install
 
 ```bash
-git clone https://github.com/<you>/netpeek.git
+git clone https://github.com/dskil/netpeek.git
 cd netpeek
 pip install .            # gives you BOTH `netpeek` and `fsociety`
 ```

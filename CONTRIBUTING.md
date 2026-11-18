@@ -19,7 +19,7 @@ must stay legally safe. Please read this before opening a pull request.
 ## Development setup
 
 ```bash
-git clone https://github.com/<you>/netpeek.git
+git clone https://github.com/dskil/netpeek.git
 cd netpeek
 python -m venv .venv
 # Windows: .venv\Scripts\activate

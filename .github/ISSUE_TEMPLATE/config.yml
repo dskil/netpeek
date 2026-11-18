@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security issue
-    url: https://github.com/REPLACE_ME/netpeek/security/advisories/new
+    url: https://github.com/dskil/netpeek/security/advisories/new
     about: Please report vulnerabilities privately, never in a public issue.
