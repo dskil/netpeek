@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "netpeek"
-version = "0.1.0"
+version = "1.0.0"
 description = "NetPeek / fsociety — a legal, read-only look at your own network: who is connected, your IP/MAC/DNS, listening ports and a security report."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -13,7 +13,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "dskil", email = "claudedskil@gmail.com" }]
 keywords = ["network", "lan", "security", "audit", "arp", "dns", "cli", "ethical-hacking"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: System Administrators",
     "Operating System :: OS Independent",

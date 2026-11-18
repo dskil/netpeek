@@ -14,7 +14,42 @@ IP, MAC, DNS и открытые порты, и ставит оценку без
 
 ## 1. Установка (30 секунд)
 
-### Windows
+### Самый простой способ — одна команда
+
+```bash
+pipx install netpeek
+```
+
+`pipx` ставит программу в отдельное окружение и добавляет в PATH — в
+системный Python ничего не попадает. Если `pipx` нет:
+
+```powershell
+# Windows
+py -m pip install --user pipx
+py -m pipx ensurepath
+```
+
+```bash
+# Linux / macOS
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
+```
+
+Или обычный pip:
+
+```bash
+pip install netpeek
+```
+
+**Открой новое окно терминала** и проверь:
+
+```bash
+netpeek --help
+```
+
+### Через скачивание репозитория (если не хочешь pipx)
+
+#### Windows
 
 1. Скачай репозиторий: **Code → Download ZIP**, распакуй в любую папку
    (например `C:\netpeek`).
@@ -33,7 +68,7 @@ IP, MAC, DNS и открытые порты, и ставит оценку без
 netpeek --help
 ```
 
-### Linux / macOS
+#### Linux / macOS
 
 ```bash
 git clone https://github.com/dskil/netpeek.git
@@ -66,14 +101,19 @@ fsociety.bat me
 
 ### Как удалить
 
-```powershell
-uninstall.cmd          # Windows
-```
 ```bash
-./uninstall.sh         # Linux / macOS
+pipx uninstall netpeek     # если ставил через pipx
 ```
 
-Удаляется `.venv` и запись в PATH. Больше ничего не остаётся.
+```powershell
+uninstall.cmd              # Windows, если ставил через install.cmd
+```
+```bash
+./uninstall.sh             # Linux / macOS, если ставил через install.sh
+```
+
+`pipx uninstall` убирает программу и её окружение. `uninstall.cmd` /
+`uninstall.sh` удаляют `.venv` и запись в PATH. Больше ничего не остаётся.
 
 ---
 
