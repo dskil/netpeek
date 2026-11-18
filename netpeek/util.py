@@ -25,6 +25,7 @@ _COLORS = {
     "magenta": "\033[35m",
     "cyan": "\033[36m",
     "grey": "\033[90m",
+    "white": "\033[97m",
 }
 
 _COLOR_ENABLED = True
@@ -116,7 +117,7 @@ def bullet(
     *label* stays grey so the eye lands on the value, but the value itself
     is plain (not dim), which was almost unreadable on dark terminals.
     """
-    name = style(f"{label:<{width}}", "grey")
+    name = style(f"{label:<{width}}", "white")
     text = str(value)
     if danger and kind == "plain":
         kind = "bad"
