@@ -150,11 +150,11 @@ def cmd_me(args) -> int:
 
     host = data["hostname"]
     util.header("this device")
-    util.bullet("hostname", host.get("hostname", ""))
+    util.bullet("hostname", host.get("hostname", ""), width=12, kind="info")
     if host.get("fqdn") and host.get("fqdn") != host.get("hostname"):
-        util.bullet("fqdn", host["fqdn"])
+        util.bullet("fqdn", host["fqdn"], width=12)
     if host.get("domain"):
-        util.bullet(host.get("domain_type", "domain"), host["domain"])
+        util.bullet(host.get("domain_type", "domain"), host["domain"], width=12)
 
     if show_all or args.ip:
         util.header("ip addresses")
@@ -163,15 +163,20 @@ def cmd_me(args) -> int:
         width = max([len(i["name"]) for i in data["interfaces"]] + [8])
         for iface in data["interfaces"]:
             for ip in iface["ipv4"]:
-                util.bullet(iface["name"], f"{ip}  (IPv4)", width=width)
+                util.bullet(iface["name"], f"{ip}  (IPv4)", width=width, kind="info")
             for ip in iface["ipv6"]:
-                util.bullet(iface["name"], f"{ip}  (IPv6)", width=width)
+                util.bullet(iface["name"], f"{ip}  (IPv6)", width=width, kind="info")
         if data["public_ip"]:
             det = data.get("public_details", {})
             extra = ", ".join(x for x in (det.get("org", ""), det.get("country", "")) if x)
-            util.bullet("public", f"{data['public_ip']}  {('(' + extra + ')') if extra else ''}")
+            util.bullet(
+                "public",
+                f"{data['public_ip']}  {('(' + extra + ')') if extra else ''}",
+                width=width,
+                kind="strong",
+            )
         if data["networks"]:
-            util.bullet("subnet", ", ".join(data["networks"]))
+            util.bullet("subnet", ", ".join(data["networks"]), width=width)
 
     if show_all or args.mac:
         util.header("mac addresses")
@@ -182,12 +187,14 @@ def cmd_me(args) -> int:
                     iface["name"],
                     f"{iface['mac']}  ({iface.get('vendor') or 'unknown vendor'})",
                     width=width,
+                    kind="info",
                 )
 
     if show_all or args.gateway:
         util.header("gateway & dns")
-        util.bullet("gateway", data["gateway"] or "not found")
-        util.bullet("dns", ", ".join(data["dns"]) or "not configured")
+        util.bullet("gateway", data["gateway"] or "not found", width=12,
+                    kind="info" if data["gateway"] else "warn")
+        util.bullet("dns", ", ".join(data["dns"]) or "not configured", width=12)
 
     if show_all or args.ports_:
         util.header("listening ports (this device)")
@@ -196,13 +203,17 @@ def cmd_me(args) -> int:
         if not rows:
             print("  nothing is listening")
         for row in rows:
-            line = f"{row['port']:<6} {row['service'] or '':<14} {row['process'] or '':<22} {row['address']}"
+            port = util.style_value(f"{row['port']:<6}", "strong")
+            head = (
+                f"{port} {row['service'] or '':<14} "
+                f"{row['process'] or '':<22} {row['address']:<18}"
+            )
             if row["risk"]:
-                print(f"  {line}  {util.style('⚠ ' + row['risk'], 'yellow')}")
+                print(f"  {head} {util.style('⚠ ' + row['risk'], 'bold', 'yellow')}")
             elif row["exposed"]:
-                print(f"  {line}  {util.style('(reachable from the LAN)', 'dim')}")
+                print(f"  {head} {util.style('(reachable from the LAN)', 'yellow')}")
             else:
-                print(f"  {line}  {util.style('(localhost only)', 'dim')}")
+                print(f"  {head} {util.style('(localhost only)', 'dim')}")
 
     if show_all or args.conns:
         util.header("active connections")
@@ -210,12 +221,17 @@ def cmd_me(args) -> int:
         if not rows:
             print("  no established connections")
         for row in rows:
-            print(f"  {row['remote_ip']:<40} :{row['remote_port']:<6} {row['service']}")
+            print(
+                f"  {util.style_value(row['remote_ip'], 'info'):<40} "
+                f"{util.style(':' + str(row['remote_port']), 'bold'):<6} {row['service']}"
+            )
 
     if (show_all or args.wifi) and data["wifi"]:
         util.header("wi-fi")
+        width = max([len(k) for k in data["wifi"]] + [10])
         for key, value in data["wifi"].items():
-            util.bullet(key, value)
+            kind = "ok" if key == "signal" else "plain"
+            util.bullet(key, value, width=width, kind=kind)
     return 0
 
 
@@ -294,14 +310,18 @@ def cmd_dns(args) -> int:
         util.warn("no records found")
     for rtype, values in result["records"].items():
         for value in values:
-            util.bullet(rtype, value)
+            util.bullet(rtype, value, kind="info" if rtype in ("A", "AAAA", "MX") else "plain")
     util.header("mail authentication")
-    util.bullet("spf", result["spf"] or "missing")
-    util.bullet("dmarc", result["dmarc"] or "missing")
-    util.bullet("dkim", ", ".join(result["dkim_selectors"]) or "not found")
+    for label, key in (("SPF", "spf"), ("DMARC", "dmarc")):
+        present = bool(result[key])
+        util.bullet(label, result[key] or "missing", kind="ok" if present else "warn")
+    dkim = result["dkim_selectors"]
+    util.bullet("DKIM", ", ".join(dkim) or "not found", kind="ok" if dkim else "warn")
     print()
     for check in result["checks"]:
-        print(f"  • {check}")
+        ok = "present" in check or "look" in check
+        marker = util.style("✔", "green") if ok else util.style("•", "yellow")
+        print(f"  {marker} {check}")
     return 0
 
 
@@ -315,7 +335,7 @@ def cmd_myip(args) -> int:
     if not ip:
         util.warn("could not reach the internet")
         return 1
-    util.bullet("ip", ip)
+    util.bullet("IP", ip, kind="info")
     for key in ("country", "city", "org", "hostname"):
         if details.get(key):
             util.bullet(key, details[key])
@@ -331,11 +351,44 @@ def cmd_whois(args) -> int:
     if result.get("source") == "unavailable":
         util.warn("whois service unavailable (offline?)")
         return 1
+
+    rows = []
     for key, value in result.items():
         if key in ("query", "source"):
             continue
-        util.bullet(key[:12], value)
+        rows.append((util.prettify_label(key), value))
+    # Align on the longest label so "last changed" is shown in full.
+    width = max([len(label) for label, _ in rows] + [8])
+    for label, value in rows:
+        if label == "expires" and str(value):
+            # Show how much time is left — that is the useful part.
+            days = _days_until(str(value))
+            if days is not None:
+                kind = "bad" if days < 0 else "warn" if days < 30 else "ok"
+                util.bullet(label, f"{value}   ({days} days left)", width=width, kind=kind)
+                continue
+        if label == "status":
+            continue
+        util.bullet(label, value, width=width, kind="info" if label == "domain" else "plain")
+    if result.get("status"):
+        util.header("status")
+        for flag in str(result["status"]).split(", "):
+            print(f"  • {flag}")
     return 0
+
+
+def _days_until(timestamp: str) -> int:
+    """Whole days between now and an ISO-8601 timestamp, or -1 if unknown."""
+    from datetime import datetime, timezone
+
+    text = timestamp.strip().replace("Z", "+00:00")
+    try:
+        when = datetime.fromisoformat(text)
+    except ValueError:
+        return -1
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=timezone.utc)
+    return (when - datetime.now(timezone.utc)).days
 
 
 def cmd_tls(args) -> int:
@@ -347,13 +400,15 @@ def cmd_tls(args) -> int:
     if result.get("error"):
         util.warn(result["error"])
         return 1
-    util.bullet("subject", result["subject"])
+    util.bullet("subject", result["subject"], kind="info")
     util.bullet("issuer", result["issuer"])
-    util.bullet("expires", f"{result['not_after']}  ({result['days_left']} days left)")
+    days = result.get("days_left")
+    kind = "bad" if days is not None and days < 0 else "warn" if days is not None and days < 30 else "ok"
+    util.bullet("expires", f"{result['not_after']}   ({days} days left)", kind=kind)
     if result.get("warning"):
         util.warn(result["warning"])
     for name in result.get("san", [])[:10]:
-        util.bullet("san", name)
+        util.bullet("SAN", name)
     return 0
 
 

@@ -91,9 +91,13 @@ def check_files() -> None:
     import ipaddress
 
     ALLOWED = {"8.8.8.8", "1.1.1.1", "255.255.255.0", "999.1.1.1"}
+    SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache",
+                 "build", "dist", "node_modules"}
     leaks = []
     for path in ROOT.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
+        if not path.is_file():
+            continue
+        if any(part in SKIP_DIRS for part in path.relative_to(ROOT).parts):
             continue
         if path.suffix not in {".py", ".md", ".toml", ".yml", ".yaml", ".txt"}:
             continue
@@ -332,6 +336,29 @@ def check_installers() -> None:
         check("uninstall.sh parses", proc.returncode == 0)
 
 
+def check_screenshots() -> None:
+    """Every image referenced from the docs must exist and be small."""
+    import re as _re
+
+    missing = []
+    heavy = []
+    for doc in ("README.md", "GUIDE.md"):
+        path = ROOT / doc
+        if not path.is_file():
+            continue
+        body = path.read_text(encoding="utf-8")
+        for rel in _re.findall(r"!\[[^\]]*\]\(([^)]+)\)", body):
+            if rel.startswith("http"):
+                continue
+            target = (ROOT / rel).resolve()
+            if not target.is_file():
+                missing.append(f"{doc} -> {rel}")
+            elif target.stat().st_size > 500_000:
+                heavy.append(f"{rel} ({target.stat().st_size // 1024} KB)")
+    check("all screenshots referenced by the docs exist", not missing, ", ".join(missing))
+    check("screenshots are reasonably small", not heavy, ", ".join(heavy))
+
+
 # --------------------------------------------------------------------------- #
 
 
@@ -339,7 +366,7 @@ def main() -> int:
     print(f"Checking {ROOT}\n")
     for fn in (check_files, check_tests, check_help, check_aliases,
                check_guard, check_commands, check_report, check_packaging,
-               check_wrappers, check_installers):
+               check_wrappers, check_installers, check_screenshots):
         try:
             fn()
         except Exception as exc:  # noqa: BLE001

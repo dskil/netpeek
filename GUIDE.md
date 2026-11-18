@@ -3,6 +3,8 @@
 **Коротко:** `netpeek` показывает, кто подключён к твоей сети, какие у тебя
 IP, MAC, DNS и открытые порты, и ставит оценку безопасности твоему компьютеру.
 
+![netpeek me](docs/screenshots/netpeek-me.png)
+
 Работает на **Windows**, **Linux** и **macOS**. Нужен только **Python 3.9+**.
 
 > `netpeek` и `fsociety` — это **одна и та же программа**. Просто два имени,
@@ -112,7 +114,7 @@ netpeek --help    # список всех команд
   5000             localhost   127.0.0.1  python
 
 ── ACTIVE CONNECTIONS ──────────────────────────────────
-  104.21.21.168   :443    HTTPS
+  203.0.113.7     :443    HTTPS
 
 ── WI-FI ───────────────────────────────────────────────
   ssid      : HomeNet
@@ -136,6 +138,8 @@ netpeek me --wifi     # только Wi-Fi
 ```bash
 netpeek scan
 ```
+
+![netpeek scan](docs/screenshots/netpeek-scan.png)
 
 ```
 ── DEVICES IN YOUR NETWORK ─────────────────────────────

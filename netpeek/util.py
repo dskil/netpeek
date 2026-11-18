@@ -48,6 +48,52 @@ def style(text: str, *names: str) -> str:
     return f"{prefix}{text}{_COLORS['reset']}"
 
 
+# Terminal styling for values, keyed by meaning rather than by colour name.
+_STYLE_VALUE = {
+    "plain": (),
+    "strong": ("bold",),
+    "ok": ("bold", "green"),
+    "warn": ("bold", "yellow"),
+    "bad": ("bold", "red"),
+    "info": ("bold", "cyan"),
+    "muted": ("dim",),
+}
+
+#: Human-readable names for API-style keys (whois, TLS, JSON fields).
+_LABEL_NAMES = {
+    "ldhname": "domain",
+    "handle": "handle",
+    "registrar": "registrar",
+    "registrant": "registrant",
+    "registration": "registered",
+    "expiration": "expires",
+    "last_changed": "last changed",
+    "startaddress": "ip range",
+    "ip_version": "ip version",
+    "status": "status",
+    "country": "country",
+    "name": "name",
+    "objectclassname": "type",
+    "not_after": "expires",
+    "days_left": "days left",
+    "san": "SAN",
+    "subject": "subject",
+    "issuer": "issuer",
+}
+
+
+def prettify_label(key: str) -> str:
+    """Turn ``last_changed`` into ``last changed``, ``ldhName`` into ``domain``."""
+    plain = key.replace("_", " ").replace("-", " ")
+    if key.lower().replace("_", "").replace("-", "") in _LABEL_NAMES:
+        return _LABEL_NAMES[key.lower().replace("_", "").replace("-", "")]
+    return plain
+
+
+def style_value(text: Any, kind: str = "plain") -> str:
+    return style(str(text), *_STYLE_VALUE.get(kind, ()))
+
+
 def header(title: str) -> None:
     line = style(f"── {title.upper()} " + "─" * max(0, 52 - len(title)), "bold", "cyan")
     print()
@@ -58,10 +104,23 @@ def warn(text: str) -> None:
     print(f"  {style('⚠', 'yellow')} {style(text, 'yellow')}")
 
 
-def bullet(label: str, value: Any, danger: bool = False, width: int = 10) -> None:
+def bullet(
+    label: str,
+    value: Any,
+    danger: bool = False,
+    width: int = 10,
+    kind: str = "plain",
+) -> None:
+    """Print ``label : value`` with a readable, colour-coded label.
+
+    *label* stays grey so the eye lands on the value, but the value itself
+    is plain (not dim), which was almost unreadable on dark terminals.
+    """
     name = style(f"{label:<{width}}", "grey")
-    val = str(value)
-    print(f"  {name}: {style(val, 'red') if danger else val}")
+    text = str(value)
+    if danger and kind == "plain":
+        kind = "bad"
+    print(f"  {name}: {style_value(text, kind)}")
 
 
 # --------------------------------------------------------------------------- #
