@@ -1,0 +1,18 @@
+# Normalise line endings so the shell scripts keep working on Linux/macOS
+# even when the repository is cloned on Windows.
+
+* text=auto
+
+# Shell scripts MUST keep LF, otherwise "#!/usr/bin/env sh" breaks.
+*.sh       text eol=lf
+bin/netpeek text eol=lf
+bin/fsociety text eol=lf
+
+# Windows batch files want CRLF.
+*.bat      text eol=crlf
+*.cmd      text eol=crlf
+
+# Binary-ish files: leave alone.
+*.png      binary
+*.jpg      binary
+*.whl      binary

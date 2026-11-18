@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+# NetPeek / fsociety - run straight from a fresh clone, no install needed.
+#
+#   ./bin/netpeek --help
+#   ./bin/netpeek me --ip
+#
+# Prefers an installed console script, otherwise runs this checkout.
+
+set -eu
+
+HERE=$(cd "$(dirname "$0")/.." && pwd)
+
+# 1) Installed console script wins (it may be newer than this checkout).
+if command -v netpeek >/dev/null 2>&1; then
+    case "$(command -v netpeek)" in
+        *"/bin/netpeek"|*"\\bin\\netpeek") : ;;   # this very file: ignore
+        *) exec netpeek "$@" ;;
+    esac
+fi
+
+# 2) Pick a Python interpreter (works in Git Bash on Windows as well).
+PY=$(sh "$HERE/.find-python.sh" 2>/dev/null || true)
+if [ -z "$PY" ]; then
+    echo "[netpeek] Python 3.9+ was not found on PATH." >&2
+    exit 9009
+fi
+
+PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}"
+NETPEEK_PROG=netpeek
+export PYTHONPATH NETPEEK_PROG
+exec "$PY" -m netpeek "$@"

@@ -65,6 +65,17 @@ def check_files() -> None:
         "netpeek/main.py",
         "tests/test_core.py",
         ".github/workflows/tests.yml",
+        # zero-install entry points
+        "netpeek.bat",
+        "fsociety.bat",
+        "bin/netpeek",
+        "bin/fsociety",
+        ".find-python.sh",
+        # installers
+        "install.cmd",
+        "install.sh",
+        "uninstall.cmd",
+        "uninstall.sh",
     ]
     missing = [f for f in required if not (ROOT / f).is_file()]
     check("required files present", not missing, ", ".join(missing))
@@ -274,12 +285,61 @@ def check_packaging() -> None:
 
 
 # --------------------------------------------------------------------------- #
+# 6. Zero-install wrappers and installers
+# --------------------------------------------------------------------------- #
+
+
+def check_wrappers() -> None:
+    """Every wrapper must work from a fresh clone, without pip install."""
+    if os.name == "nt":
+        wrappers = [
+            ("netpeek.bat", "netpeek"),
+            ("fsociety.bat", "fsociety"),
+        ]
+        for path, expected in wrappers:
+            proc = run(["cmd", "/c", str(ROOT / path), "--help"], timeout=120)
+            out = proc.stdout.decode("utf-8", "replace")
+            ok = proc.returncode == 0 and f"usage: {expected}" in out
+            check(f"`{path} --help` runs without installing", ok, out[-160:])
+
+            proc = run(["cmd", "/c", str(ROOT / path), "version"], timeout=120)
+            out = proc.stdout.decode("utf-8", "replace").strip()
+            check(f"`{path} version` reports {expected}", out.startswith(expected), out)
+    else:
+        for path, expected in (("bin/netpeek", "netpeek"), ("bin/fsociety", "fsociety")):
+            proc = run(["sh", str(ROOT / path), "--help"], timeout=120)
+            out = proc.stdout.decode("utf-8", "replace")
+            check(f"`{path} --help` runs without installing",
+                  proc.returncode == 0 and f"usage: {expected}" in out, out[-160:])
+
+
+def check_installers() -> None:
+    """Installers must support --dry-run; uninstallers must run cleanly."""
+    if os.name == "nt":
+        proc = run(["cmd", "/c", str(ROOT / "install.cmd"), "--dry-run"], timeout=180)
+        out = (proc.stdout + proc.stderr).decode("utf-8", "replace")
+        check("install.cmd --dry-run works", proc.returncode == 0 and "DRY RUN" in out, out[-200:])
+
+        proc = run(["cmd", "/c", str(ROOT / "uninstall.cmd")], timeout=180)
+        out = (proc.stdout + proc.stderr).decode("utf-8", "replace")
+        check("uninstall.cmd runs cleanly", proc.returncode == 0, out[-200:])
+    else:
+        proc = run(["sh", str(ROOT / "install.sh"), "--dry-run"], timeout=180)
+        out = (proc.stdout + proc.stderr).decode("utf-8", "replace")
+        check("install.sh --dry-run works", proc.returncode == 0 and "DRY RUN" in out, out[-200:])
+
+        proc = run(["sh", "-n", str(ROOT / "uninstall.sh")], timeout=60)
+        check("uninstall.sh parses", proc.returncode == 0)
+
+
+# --------------------------------------------------------------------------- #
 
 
 def main() -> int:
     print(f"Checking {ROOT}\n")
     for fn in (check_files, check_tests, check_help, check_aliases,
-               check_guard, check_commands, check_report, check_packaging):
+               check_guard, check_commands, check_report, check_packaging,
+               check_wrappers, check_installers):
         try:
             fn()
         except Exception as exc:  # noqa: BLE001

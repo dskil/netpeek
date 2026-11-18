@@ -7,10 +7,14 @@ build/
 dist/
 *.whl
 
-# Virtual environments
+# Virtual environments (created by install.cmd / install.sh)
 .venv/
 venv/
 env/
+
+# Keep the shell wrappers executable and tracked
+!bin/netpeek
+!bin/fsociety
 
 # Tooling / tests
 .pytest_cache/

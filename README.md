@@ -5,6 +5,60 @@ See who is connected to your Wi-Fi, what your own IP / MAC / DNS / listening
 ports are, and get a security score for your machine — all from one friendly
 command-line tool.
 
+## Get running in one step
+
+```bash
+git clone https://github.com/dskil/netpeek.git
+cd netpeek
+```
+
+then **one** of these — all three give you the `netpeek` and `fsociety`
+commands:
+
+| Your OS | Best option | What it does |
+|---|---|---|
+| Windows | double-click **`install.cmd`** (or run it) | creates an isolated `.venv`, installs, and adds it to your user PATH |
+| Linux / macOS / Git Bash | `./install.sh` | same, and adds the venv to your shell rc file |
+| Anywhere | `pip install .` | classic install into the active Python |
+
+Then, in a **new terminal**:
+
+```bash
+netpeek --help          # list of commands
+netpeek me              # everything about this device
+fsociety --help         # same tool, other name
+```
+
+### Don't want to install anything?
+
+Run it straight from the checkout — every wrapper falls back to
+`python -m netpeek` when the package is not installed:
+
+```bash
+# Windows (cmd / PowerShell)
+netpeek.bat --help
+fsociety.bat me --ip
+
+# Linux / macOS / Git Bash
+./bin/netpeek --help
+./bin/fsociety me --ip
+```
+
+All you need is **Python 3.9+** on PATH. Nothing is written outside the
+repository, and `install.cmd` / `install.sh` never need administrator rights.
+
+### Removing it
+
+```bash
+# Windows
+uninstall.cmd
+# Linux / macOS
+./uninstall.sh
+```
+
+That deletes `.venv` and removes the PATH entry it added. If you used
+`pip install .`, also run `pip uninstall netpeek`.
+
 ```text
 $ netpeek me --ip
 ── IP ADDRESSES ────────────────────────────────────────
@@ -47,6 +101,13 @@ illegal.
 ---
 
 ## Install
+
+**Recommended:** run `install.cmd` (Windows) or `./install.sh`
+(Linux/macOS) from the cloned folder — it creates `.venv`, installs the
+package there and puts it on your PATH, so nothing in your system Python
+changes. See [Get running in one step](#get-running-in-one-step).
+
+**Manual:**
 
 ```bash
 git clone https://github.com/dskil/netpeek.git
@@ -242,6 +303,13 @@ python -m netpeek --help      # runs without installing
 python -m netpeek me
 ```
 
+The zero-install wrappers are handy during development too:
+
+```bash
+netpeek.bat --help            # Windows
+./bin/netpeek --help          # Linux / macOS / Git Bash
+```
+
 **Before publishing, run the self-check** — it runs everything a reviewer
 would run and prints a PASS/FAIL list:
 
@@ -253,12 +321,22 @@ It verifies: required files, both console scripts, no leftover `REPLACE_ME`,
 no real IP addresses committed, reports git-ignored, the whole pytest suite,
 `--help` for every command, that `netpeek` and `fsociety` expose identical
 commands, that the guard refuses foreign targets, that the real commands work
-on this machine, that `report` writes both files, and that the package builds
-into a wheel.
+on this machine, that `report` writes both files, that both `.bat` wrappers
+work without installing, that `install.cmd`'s dry-run is safe, and that the
+package builds into a wheel.
 
 ```
 netpeek/
 ├── pyproject.toml        # two console scripts: netpeek + fsociety
+├── install.cmd           # Windows: venv + install + PATH
+├── install.sh            # Linux/macOS: same
+├── uninstall.cmd         # undo the above
+├── uninstall.sh
+├── netpeek.bat           # run without installing (Windows)
+├── fsociety.bat
+├── bin/
+│   ├── netpeek           # run without installing (Linux/macOS/Git Bash)
+│   └── fsociety
 ├── scripts/
 │   └── check_before_publish.py   # pre-publish verification
 ├── netpeek/

@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# NetPeek / fsociety - same wrapper as bin/netpeek, under the other name.
+# Both names run the same tool with the same commands.
+
+set -eu
+
+HERE=$(cd "$(dirname "$0")/.." && pwd)
+
+if command -v fsociety >/dev/null 2>&1; then
+    case "$(command -v fsociety)" in
+        *"/bin/fsociety"|*"\\bin\\fsociety") : ;;   # this very file: ignore
+        *) exec fsociety "$@" ;;
+    esac
+fi
+
+PY=$(sh "$HERE/.find-python.sh" 2>/dev/null || true)
+if [ -z "$PY" ]; then
+    echo "[fsociety] Python 3.9+ was not found on PATH." >&2
+    exit 9009
+fi
+
+PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}"
+NETPEEK_PROG=fsociety
+export PYTHONPATH NETPEEK_PROG
+exec "$PY" -m netpeek "$@"

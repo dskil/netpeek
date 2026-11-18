@@ -48,7 +48,17 @@ The two names are one tool: same commands, same output.
 
 
 def program_name() -> str:
-    """Name used in usage/help — whichever alias the user invoked."""
+    """Name used in usage/help — whichever alias the user invoked.
+
+    Checked in order:
+      1. ``NETPEEK_PROG`` — set by the shell wrappers (``fsociety.bat`` etc.),
+         because ``python -m netpeek`` would otherwise just say "netpeek";
+      2. ``argv[0]`` — the installed console script (``netpeek``/``fsociety``).
+    """
+    override = os.environ.get("NETPEEK_PROG", "").strip().lower()
+    if override in ("netpeek", "fsociety"):
+        return override
+
     name = os.path.basename(sys.argv[0]).lower()
     if name.endswith(".exe"):
         name = name[:-4]
