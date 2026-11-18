@@ -117,7 +117,7 @@ def bullet(
     *label* stays grey so the eye lands on the value, but the value itself
     is plain (not dim), which was almost unreadable on dark terminals.
     """
-    name = style(f"{label:<{width}}", "white")
+    name = style(f"{label:<{width}}", "bold")
     text = str(value)
     if danger and kind == "plain":
         kind = "bad"
