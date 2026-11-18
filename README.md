@@ -8,11 +8,15 @@ command-line tool.
 ```text
 $ netpeek me --ip
 ── IP ADDRESSES ────────────────────────────────────────
-  Беспроводная сеть : 192.168.1.100  (IPv4)
-  Radmin VPN        : 26.63.236.79   (IPv4)
-  public            : 185.142.64.202  (AS50289 ..., RU)
-  subnet            : 192.168.1.0/24
+  Wi-Fi             : 192.168.0.42   (IPv4)
+  Ethernet          : 10.0.0.15      (IPv4)
+  public            : 203.0.113.7    (AS64500 Example ISP, XX)
+  subnet            : 192.168.0.0/24
 ```
+
+_(Addresses in this README use documentation ranges such as 192.0.2.0/24,
+198.51.100.0/24 and 203.0.113.0/24, plus the common private example
+192.168.0.x — never a real user's addresses.)_
 
 > **Same tool, two names.** `netpeek` and `fsociety` are the *same* package
 > with the *same* commands — `fsociety` is the name for people who remember
@@ -71,7 +75,7 @@ Windows, Linux and macOS.
 netpeek me                  # everything about this device
 netpeek me --ports          # which ports THIS device is listening on
 netpeek scan                # who is on my LAN right now
-netpeek ports 192.168.1.1   # open ports of my router
+netpeek ports 192.168.0.1   # open ports of my router
 netpeek report              # writes report.md + report.json
 ```
 
@@ -167,7 +171,7 @@ Every read-only command accepts `--json`, which makes scripting easy:
 ```bash
 netpeek me --ip --json          # {"ipv4": [...], "public_ip": ...}
 netpeek scan --json             # [{"ip": "...", "mac": "...", "vendor": "..."}]
-netpeek ports 192.168.1.1 --json
+netpeek ports 192.168.0.1 --json
 netpeek audit --json
 ```
 
@@ -238,9 +242,25 @@ python -m netpeek --help      # runs without installing
 python -m netpeek me
 ```
 
+**Before publishing, run the self-check** — it runs everything a reviewer
+would run and prints a PASS/FAIL list:
+
+```bash
+python scripts/check_before_publish.py
+```
+
+It verifies: required files, both console scripts, no leftover `REPLACE_ME`,
+no real IP addresses committed, reports git-ignored, the whole pytest suite,
+`--help` for every command, that `netpeek` and `fsociety` expose identical
+commands, that the guard refuses foreign targets, that the real commands work
+on this machine, that `report` writes both files, and that the package builds
+into a wheel.
+
 ```
 netpeek/
 ├── pyproject.toml        # two console scripts: netpeek + fsociety
+├── scripts/
+│   └── check_before_publish.py   # pre-publish verification
 ├── netpeek/
 │   ├── main.py           # argparse CLI, one handler per command
 │   ├── netinfo.py        # interfaces, MAC, gateway, DNS, hostname, Wi-Fi

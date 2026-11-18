@@ -31,15 +31,16 @@ NetPeek is read-only and legal by design:
 
 Use it on your own network, or where you have written permission.
 
-Examples:
-  netpeek me                          # full report about this device
-  netpeek me --ports --json           # which ports this device listens on
-  netpeek scan                        # who is in my LAN right now
-  netpeek ports 192.168.1.10 --range 1-1024
-  netpeek report                      # write report.md + report.json
-  fsociety --help                     # exactly the same tool, other name
-"""
+Examples (replace <cmd> with whichever name you installed):
+  <cmd> me                          # full report about this device
+  <cmd> me --ports --json           # which ports this device listens on
+  <cmd> scan                        # who is in my LAN right now
+  <cmd> ports 192.168.1.10 --range 1-1024
+  <cmd> report                      # write report.md + report.json
+  <cmd> version                     # show the version
 
+The two names are one tool: same commands, same output.
+"""
 
 # --------------------------------------------------------------------------- #
 # Presentation helpers
@@ -877,7 +878,7 @@ def build_parser(name: Optional[str] = None) -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int, default=20)
 
     # --- config ------------------------------------------------------------
-    p = add("init", cmd_init, "Create the config file (~/.config/netpeek/config.toml).")
+    p = add("init", cmd_init, "Create the local config file (see the `config` command).")
     p.add_argument("--force", action="store_true", help="overwrite an existing config")
 
     p = add("config", cmd_config, "Show or change settings.")
