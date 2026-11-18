@@ -5,6 +5,9 @@ See who is connected to your Wi-Fi, what your own IP / MAC / DNS / listening
 ports are, and get a security score for your machine — all from one friendly
 command-line tool.
 
+> 🇷🇺 **Русский гайд для новичков: [GUIDE.md](GUIDE.md)** — установка за 30
+> секунд и все команды простыми словами.
+
 ## Get running in one step
 
 ```bash
