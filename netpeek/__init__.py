@@ -9,7 +9,7 @@ Both entry points call :func:`netpeek.main:run` and expose exactly the same
 commands.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 #: Aliases that may be used on the command line.
 ALIASES = ("netpeek", "fsociety")

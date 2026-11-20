@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-11-20
+
+### Fixed
+
+- Package description on PyPI showed a mangled character where an em dash
+  sat (`NetPeek / fsociety â ...`); it now uses a plain hyphen, so the summary
+  renders correctly everywhere. No code changes.
+
 ## [1.0.0] — 2026-11-18
 
 First stable release. NetPeek is now installable with a single command:
@@ -61,5 +69,6 @@ pipx install netpeek      # or: pip install netpeek
   and `netpeek.bat` / `bin/netpeek` run straight from a checkout with no
   install at all.
 
-[Unreleased]: https://github.com/dskil/netpeek/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/dskil/netpeek/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/dskil/netpeek/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/dskil/netpeek/releases/tag/v1.0.0
